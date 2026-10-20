@@ -877,7 +877,12 @@
       "dex_constructor_code_unit_offset": "12f2"
     }
   ],
-  "swift_compilation": "not_run_no_compiler",
+  "swift_compilation": {
+    "status": "passed",
+    "scope": "Swift package on macOS; full iOS application pending",
+    "port_commit": "25b698f8d371d27b1e138a0766e70fa7db32c8a8",
+    "workflow_run": "https://github.com/w3b-code/exteragram-lite-ios/actions/runs/39470628322"
+  },
   "swift_tests": {
     "status": "passed",
     "platform": "GitHub macOS 26",
