@@ -10,6 +10,8 @@ The app job checks out Telegram iOS at `f1dd7a2dbd02cbbf513e75d5695d8d36d1cf5838
 
 The build writes the upstream build-configuration module directly with an unsigned placeholder team identifier. It disables provisioning-profile dependencies with `--//Telegram:disableProvisioningProfiles` and disables device signing with the vendored rules_apple feature `disable_legacy_signing`. The normal Make.py signing resolver is deliberately not invoked: at this pinned revision its build command requires signing material and does not expose the same disable-profile switch as project generation.
 
+The pinned rules_apple still requests profile embedding for six device bundle rules after signing is disabled. `unsigned_rules.json` makes those six embedding guards honor `disable_legacy_signing`; ordinary signed builds keep their original behavior. This includes the app and its extensions, so an unsigned build does not need to drop extensions merely to bypass profile validation. Patches require the initialized pinned rules_apple submodule.
+
 Bazel's output root is placed under `RUNNER_TEMP`, outside the source checkout. Bazel 9 rejects its repository-content cache when that cache is inside the main repository.
 
 After successful compilation, the workflow verifies that the IPA has a single `Payload/*.app`, an iPhoneOS main bundle, an arm64 device Mach-O platform, and no embedded provisioning profile or bundle-signature resources. It records a checksum and source revisions in `build-manifest.json`. These checks establish build/package structure; they do not establish installation, login or feature parity on a physical iPhone.
