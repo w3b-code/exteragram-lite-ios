@@ -2,7 +2,7 @@
 
 The workflow is manual (`Actions` → `iOS packages and unsigned IPA` → `Run workflow`). It has no push/PR trigger and does not change repository visibility. Keep the repository public for the complete workflow if using the free standard GitHub-hosted macOS runners. Private-repository minutes and artifact storage are separate allowances.
 
-The package job tests `ExteraResources`, `ExteraPreferences`, `ExteraSpeech`, and `ExteraTranslation`, typechecks the Apple speech adapter against the iPhoneOS SDK, parses the Swift overlays, and tests the Python IPA validator. To run only these checks, clear the **Build a device IPA** option. No API credentials or Apple signing files are needed for package checks.
+The package job tests `ExteraResources`, `ExteraPreferences`, `ExteraSpeech`, `ExteraTranslation`, and `ExteraExport`, typechecks the Apple speech adapter against the iPhoneOS SDK, parses the Swift overlays, and tests the Python IPA validator. To run only these checks, clear the **Build a device IPA** option. No API credentials or Apple signing files are needed for package checks.
 
 For an application build, add repository Secrets `TELEGRAM_API_ID` and `TELEGRAM_API_HASH` with the application's own Telegram API credentials. They can be obtained at https://my.telegram.org/apps. No `.p12`, password, `.mobileprovision`, Apple account or signing certificate is used by this workflow. These API credentials identify the Telegram application; they are unrelated to Feather's certificate.
 
@@ -13,6 +13,8 @@ The build writes the upstream build-configuration module directly with an unsign
 The pinned rules_apple still requests profile embedding for six device bundle rules after signing is disabled. `unsigned_rules.json` makes those six embedding guards honor `disable_legacy_signing`; ordinary signed builds keep their original behavior. This includes the app and its extensions, so an unsigned build does not need to drop extensions merely to bypass profile validation. Patches require the initialized pinned rules_apple submodule.
 
 Bazel's output root is placed under `RUNNER_TEMP`, outside the source checkout. Bazel 9 rejects its repository-content cache when that cache is inside the main repository.
+
+The pinned upstream selects an arm64 macOS WASI SDK even on Intel hosts. The `wasi_host.json` patch uses a small repository rule to choose the official SDK 33 archive for the actual host. Both arm64 and x86_64 archives have fixed SHA-256 checksums; the version and WebAssembly target remain the same. The Intel checksum was verified against the official [WASI SDK 33 release metadata](https://api.github.com/repos/WebAssembly/wasi-sdk/releases/tags/wasi-sdk-33). The standard Intel runner is retained for its additional memory.
 
 After successful compilation, the workflow verifies that the IPA has a single `Payload/*.app`, an iPhoneOS main bundle, an arm64 device Mach-O platform, and no embedded provisioning profile or bundle-signature resources. It records a checksum and source revisions in `build-manifest.json`. These checks establish build/package structure; they do not establish installation, login or feature parity on a physical iPhone.
 

@@ -39,6 +39,8 @@ jobs:
           ios/ExteraSpeech/Sources/ExteraSpeech/*.swift
       - name: Test translation providers
         run: swift test --package-path ios/ExteraTranslation
+      - name: Test chat export encoding and pagination
+        run: swift test --package-path ios/ExteraExport
       - name: Check overlay Swift syntax
         shell: bash
         run: |

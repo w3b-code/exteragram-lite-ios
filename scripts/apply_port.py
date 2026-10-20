@@ -47,7 +47,7 @@ def plan_patches(upstream):
 
 def add_modules(upstream, updates):
     # SwiftPM tests and the device build consume the same module sources.
-    for module in ["ExteraSpeech", "ExteraTranslation"]:
+    for module in ["ExteraSpeech", "ExteraTranslation", "ExteraExport"]:
         sources = PORT / "ios" / module / "Sources" / module
         for source in sorted(sources.rglob("*.swift")):
             updates[safe_path(upstream, Path("submodules") / module / "Sources" / source.relative_to(sources))] = source.read_text(encoding="utf-8")
