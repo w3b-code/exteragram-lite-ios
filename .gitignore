@@ -1,0 +1,24 @@
+.DS_Store
+**/.build/
+**/__pycache__/
+*.pyc
+dist/
+upstream/
+build-input/
+.cache/
+# Signing stays on the user's iPhone in Feather.
+*.p12
+*.pfx
+*.mobileprovision
+*.provisionprofile
+*.key
+*.pem
+*.cer
+# Local research and tool downloads are not part of the distributed port.
+analysis/
+tools/
+*.apk
+*.jar
+.env
+.env.*
+unsigned-configuration.json

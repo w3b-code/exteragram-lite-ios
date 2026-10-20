@@ -1,0 +1,77 @@
+name: iOS packages and unsigned IPA
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_ipa:
+        description: Build a device IPA for signing in Feather
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-manual-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  packages:
+    name: Swift modules
+    runs-on: macos-26
+    timeout-minutes: 25
+    steps:
+      - name: Checkout port
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Test localizations
+        run: swift test --package-path ios/ExteraResources
+      - name: Test preferences
+        run: swift test --package-path ios/ExteraPreferences
+      - name: Test IPA validator
+        run: python3 -m unittest discover -s scripts/tests -v
+
+  unsigned-ipa:
+    name: Unsigned iPhone IPA
+    if: ${{ inputs.build_ipa }}
+    needs: packages
+    runs-on: macos-26-intel
+    timeout-minutes: 330
+    steps:
+      - name: Checkout port
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check Telegram API configuration
+        env:
+          TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+          TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+        run: python3 scripts/build_unsigned.py --check-credentials
+      - name: Checkout pinned Telegram iOS
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: TelegramMessenger/Telegram-iOS
+          ref: f1dd7a2dbd02cbbf513e75d5695d8d36d1cf5838
+          path: .work/Telegram-iOS
+          submodules: recursive
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Select required Xcode
+        run: python3 scripts/select_xcode.py .work/Telegram-iOS/versions.json
+      - name: Build arm64 IPA without Apple signing
+        env:
+          TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+          TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+          EXTERA_BUILD_NUMBER: ${{ github.run_number }}
+        run: python3 scripts/build_unsigned.py --upstream .work/Telegram-iOS --output dist
+      - name: Upload IPA for Feather
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: exteragram-lite-unsigned-${{ github.run_number }}
+          path: |
+            dist/exteraGram-Lite-unsigned.ipa
+            dist/build-manifest.json
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
