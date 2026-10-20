@@ -51,6 +51,22 @@ class PatchPlanTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 module.safe_path(Path(directory), "../outside")
 
+    def test_overlapping_insertions_are_rejected_before_writing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            port, upstream = root / "port", root / "upstream"
+            (port / "port/patches").mkdir(parents=True)
+            upstream.mkdir()
+            source = upstream / "test.swift"
+            source.write_text("import Common\n")
+            for name in ["A", "B"]:
+                registry = [{"path": "test.swift", "old": "import Common\n",
+                             "new": "import " + name + "\nimport Common\n"}]
+                (port / "port/patches" / (name + ".json")).write_text(json.dumps(registry))
+            with patch.object(module, "PORT", port), self.assertRaisesRegex(ValueError, "not idempotent"):
+                module.validated_plan(upstream)
+            self.assertEqual(source.read_text(), "import Common\n")
+
 
 if __name__ == "__main__":
     unittest.main()

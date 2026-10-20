@@ -19,7 +19,7 @@ def safe_path(root, relative):
     return result
 
 
-def plan_patches(upstream):
+def plan_patches(upstream, initial_texts=None):
     updates = {}
     for registry in sorted((PORT / "port/patches").glob("*.json")):
         patches = json.loads(registry.read_text(encoding="utf-8"))
@@ -27,7 +27,9 @@ def plan_patches(upstream):
             target = safe_path(upstream, patch["path"])
             text = updates.get(target)
             if text is None:
-                text = target.read_text(encoding="utf-8")
+                text = (initial_texts or {}).get(target)
+                if text is None:
+                    text = target.read_text(encoding="utf-8")
             old, new = patch["old"], patch["new"]
             count = patch.get("occurrences", 1)
             if new != old and text.count(new) == count:
@@ -42,6 +44,16 @@ def plan_patches(upstream):
         for source in sorted(group.rglob("*")):
             if source.is_file():
                 updates[safe_path(upstream, source.relative_to(group))] = source.read_text(encoding="utf-8")
+    return updates
+
+
+def validated_plan(upstream):
+    updates = plan_patches(upstream)
+    repeated = plan_patches(upstream, initial_texts=updates)
+    changed = [path for path in updates if repeated.get(path) != updates[path]]
+    if changed:
+        names = ", ".join(str(path.relative_to(upstream.resolve())) for path in changed)
+        raise ValueError("Patch registries are not idempotent: " + names)
     return updates
 
 
@@ -116,7 +128,7 @@ def main():
     commit = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
     if commit != manifest["upstream_commit"]:
         raise ValueError(f"Unsupported upstream commit: {commit}")
-    updates = plan_patches(root)
+    updates = validated_plan(root)
     add_modules(root, updates)
     record = {str(path.relative_to(root)).replace("\\", "/"): hashlib.sha256(text.encode()).hexdigest()
               for path, text in updates.items()}
