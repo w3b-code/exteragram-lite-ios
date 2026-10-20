@@ -77,6 +77,15 @@ jobs:
           persist-credentials: false
       - name: Select required Xcode
         run: python3 scripts/select_xcode.py .work/Telegram-iOS/versions.json
+      - name: Install and verify Metal toolchain
+        timeout-minutes: 20
+        shell: bash
+        run: |
+          xcodebuild -downloadComponent MetalToolchain
+          printf '%s\n' '#include <metal_stdlib>' 'using namespace metal;' 'kernel void extera_probe(device uint *out [[buffer(0)]]) { out[0] = 1; }' > "$RUNNER_TEMP/extera-probe.metal"
+          env -i PATH=/bin:/usr/bin:/usr/local/bin /usr/bin/xcrun --sdk iphoneos metal \
+            -c -target air64-apple-ios15.0 \
+            "$RUNNER_TEMP/extera-probe.metal" -o "$RUNNER_TEMP/extera-probe.air"
       - name: Build arm64 IPA without Apple signing
         env:
           TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
