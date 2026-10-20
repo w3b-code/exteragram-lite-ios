@@ -29,6 +29,12 @@ jobs:
         run: swift test --package-path ios/ExteraResources
       - name: Test preferences
         run: swift test --package-path ios/ExteraPreferences
+      - name: Check overlay Swift syntax
+        shell: bash
+        run: |
+          find port/overlays -name '*.swift' -print0 | while IFS= read -r -d '' source; do
+            xcrun swiftc -frontend -parse "$source"
+          done
       - name: Test IPA validator
         run: python3 -m unittest discover -s scripts/tests -v
 

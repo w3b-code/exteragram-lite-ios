@@ -13,15 +13,15 @@ public enum ExteraLocalization {
     /// Returns localized text with English fallback, then the resource key.
     /// Android %s placeholders are converted to Foundation %@ placeholders.
     /// Markup in the original strings is retained for the caller to render.
-    public static func text(_ key: String, languageCode: String? = nil) -> String {
-        let english = englishBundle?.localizedString(forKey: key, value: key, table: "Extera") ?? key
+    public static func text(_ key: String, languageCode: String? = nil, table: String = "Extera") -> String {
+        let english = englishBundle?.localizedString(forKey: key, value: key, table: table) ?? key
         if let languageCode {
             guard let path = Bundle.module.path(forResource: languageCode, ofType: "lproj"),
                   let bundle = Bundle(path: path) else {
                 return english
             }
-            return bundle.localizedString(forKey: key, value: english, table: "Extera")
+            return bundle.localizedString(forKey: key, value: english, table: table)
         }
-        return Bundle.module.localizedString(forKey: key, value: english, table: "Extera")
+        return Bundle.module.localizedString(forKey: key, value: english, table: table)
     }
 }

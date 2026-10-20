@@ -11,6 +11,13 @@ import ExteraResources
 private struct ExteraToggle {
     let titleKey: String
     let preference: ExteraPreference<Bool>
+    let table: String
+
+    init(titleKey: String, preference: ExteraPreference<Bool>, table: String = "Extera") {
+        self.titleKey = titleKey
+        self.preference = preference
+        self.table = table
+    }
 }
 
 // Only preferences connected to real consumers are shown here.
@@ -20,7 +27,10 @@ private let exteraToggles: [ExteraToggle] = [
     ExteraToggle(titleKey: "ReplaceEditedWithIcon", preference: ExteraSettings.replaceEditedWithIcon),
     ExteraToggle(titleKey: "HideShareButton", preference: ExteraSettings.hideShareButton),
     ExteraToggle(titleKey: "HideStories", preference: ExteraSettings.hideStories),
-    ExteraToggle(titleKey: "InAppVibration", preference: ExteraSettings.inAppVibration)
+    ExteraToggle(titleKey: "InAppVibration", preference: ExteraSettings.inAppVibration),
+    ExteraToggle(titleKey: "HideReactionsInChannels", preference: ExteraSettings.hideReactionsInChannels, table: "ExteraPort"),
+    ExteraToggle(titleKey: "HideReactionsInGroups", preference: ExteraSettings.hideReactionsInGroups, table: "ExteraPort"),
+    ExteraToggle(titleKey: "HideReactionsInPrivateChats", preference: ExteraSettings.hideReactionsInPrivateChats, table: "ExteraPort")
 ]
 
 private final class ExteraPreferencesArguments {
@@ -80,9 +90,15 @@ public func exteraGramPreferencesController(context: AccountContext) -> ViewCont
         )
         let languageCode = presentationData.strings.primaryComponent.languageCode
         let entries: [ExteraPreferencesEntry] = exteraToggles.enumerated().map { index, item in
+            var title = ExteraLocalization.text(item.titleKey, languageCode: languageCode, table: item.table)
+            if item.preference.key == ExteraSettings.replaceEditedWithIcon.key {
+                title = String(format: title, presentationData.strings.Conversation_Edited as NSString)
+            } else if item.preference.key == ExteraSettings.hideShareButton.key {
+                title = String(format: title, presentationData.strings.Common_Share as NSString)
+            }
             return ExteraPreferencesEntry(
                 stableId: Int32(index),
-                title: ExteraLocalization.text(item.titleKey, languageCode: languageCode),
+                title: title,
                 value: store.value(for: item.preference)
             )
         }
