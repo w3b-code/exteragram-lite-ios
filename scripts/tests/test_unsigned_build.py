@@ -12,7 +12,7 @@ import zipfile
 
 SCRIPTS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPTS))
-from build_unsigned import credentials
+from build_unsigned import credentials, bazel_work_root
 from validate_ipa import validate, macho_platforms
 
 
@@ -89,6 +89,26 @@ class CredentialsTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "TELEGRAM_API_HASH"):
                 credentials()
 
+
+class BazelWorkRootTests(unittest.TestCase):
+    def test_root_is_in_runner_temp_outside_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            upstream = base / "workspace/Telegram-iOS"
+            upstream.mkdir(parents=True)
+            runner_temp = base / "runner-temp"
+            with patch.dict(os.environ, {"RUNNER_TEMP": str(runner_temp)}, clear=False):
+                result = bazel_work_root(upstream)
+            self.assertEqual(result, runner_temp.resolve() / "exteragram-bazel-user-root")
+            self.assertTrue(result.is_dir())
+            self.assertFalse(result.is_relative_to(upstream.resolve()))
+
+    def test_root_inside_source_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            upstream = Path(directory)
+            with patch.dict(os.environ, {"RUNNER_TEMP": str(upstream / "build-input")}, clear=False):
+                with self.assertRaisesRegex(ValueError, "outside"):
+                    bazel_work_root(upstream)
 
 if __name__ == "__main__":
     unittest.main()

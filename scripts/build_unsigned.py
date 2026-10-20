@@ -14,6 +14,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import urllib.request
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -50,6 +51,16 @@ def acquire_bazel(destination):
         raise ValueError("Bazel binary SHA-256 mismatch")
     target.chmod(0o755)
     return target
+
+
+def bazel_work_root(upstream):
+    """Bazel 9's repository-content cache must be outside the source checkout."""
+    temporary = Path(os.environ.get("RUNNER_TEMP", tempfile.gettempdir())).resolve()
+    candidate = temporary / "exteragram-bazel-user-root"
+    if candidate.is_relative_to(upstream.resolve()):
+        raise ValueError("Bazel temporary root must be outside the Telegram source checkout")
+    candidate.mkdir(parents=True, exist_ok=True)
+    return candidate
 
 
 def build(upstream, output):
@@ -96,7 +107,7 @@ def build(upstream, output):
         variables = config_repo / "variables.bzl"
         configuration.write_to_variables_file(str(bazel), False, "production", str(variables))
         variables.chmod(0o600)
-        command = make.BazelCommandLine(str(bazel), False, False, str(build_input / "bazel-user-root"))
+        command = make.BazelCommandLine(str(bazel), False, False, str(bazel_work_root(upstream)))
         command.set_configuration("release_arm64")
         command.set_build_number(os.environ.get("EXTERA_BUILD_NUMBER", "1"))
         command.set_disable_provisioning_profiles()
