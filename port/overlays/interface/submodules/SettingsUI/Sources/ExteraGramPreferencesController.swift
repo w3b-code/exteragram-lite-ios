@@ -30,6 +30,7 @@ private let exteraToggles: [ExteraToggle] = [
     ExteraToggle(titleKey: "HideKeyboardOnScroll", preference: ExteraSettings.hideKeyboardOnScroll),
     ExteraToggle(titleKey: "DisableGreetingSticker", preference: ExteraSettings.disableGreetingSticker),
     ExteraToggle(titleKey: "FilterZalgo", preference: ExteraSettings.filterZalgo),
+    ExteraToggle(titleKey: "HideSendAsPeer", preference: ExteraSettings.hideSendAsPeer),
     ExteraToggle(titleKey: "InAppVibration", preference: ExteraSettings.inAppVibration),
     ExteraToggle(titleKey: "HideReactionsInChannels", preference: ExteraSettings.hideReactionsInChannels, table: "ExteraPort"),
     ExteraToggle(titleKey: "HideReactionsInGroups", preference: ExteraSettings.hideReactionsInGroups, table: "ExteraPort"),
