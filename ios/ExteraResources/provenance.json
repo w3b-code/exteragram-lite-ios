@@ -242,5 +242,12 @@
   ],
   "format_issues": [],
   "roundtrip_validation": "passed",
-  "apple_compiler_validation": "not_run_no_macos_or_swift_compiler"
+  "apple_compiler_validation": {
+    "status": "passed",
+    "platform": "GitHub macOS 26",
+    "tests": 5,
+    "port_commit": "8c28d4fb598cbbf15b7af3dd012d5e5c5ca8c58c",
+    "workflow_run": "https://github.com/w3b-code/exteragram-lite-ios/actions/runs/39465848539",
+    "scope": "Swift package tests; device application build and physical iPhone checks remain pending"
+  }
 }

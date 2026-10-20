@@ -2,13 +2,15 @@
 
 The workflow is manual (`Actions` → `iOS packages and unsigned IPA` → `Run workflow`). It has no push/PR trigger and does not change repository visibility. Keep the repository public for the complete workflow if using the free standard GitHub-hosted macOS runners. Private-repository minutes and artifact storage are separate allowances.
 
-The package job builds `ios/ExteraResources`, runs the `ExteraPreferences` Swift tests, and tests the Python IPA validator. To run only these checks, clear the **Build a device IPA** option. No API credentials or Apple signing files are needed for package checks.
+The package job tests `ExteraResources`, `ExteraPreferences`, `ExteraSpeech`, and `ExteraTranslation`, typechecks the Apple speech adapter against the iPhoneOS SDK, parses the Swift overlays, and tests the Python IPA validator. To run only these checks, clear the **Build a device IPA** option. No API credentials or Apple signing files are needed for package checks.
 
 For an application build, add repository Secrets `TELEGRAM_API_ID` and `TELEGRAM_API_HASH` with the application's own Telegram API credentials. They can be obtained at https://my.telegram.org/apps. No `.p12`, password, `.mobileprovision`, Apple account or signing certificate is used by this workflow. These API credentials identify the Telegram application; they are unrelated to Feather's certificate.
 
 The app job checks out Telegram iOS at `f1dd7a2dbd02cbbf513e75d5695d8d36d1cf5838` and applies this repository's source overlay. The pinned upstream requires Xcode 26.6 and Bazel 9.2.0. The workflow uses the standard `macos-26-intel` runner, selects that exact Xcode, and verifies the SHA-256 of the official Bazel binary. It does not bypass toolchain version checks. A future runner-image change that removes that Xcode fails explicitly.
 
 The build writes the upstream build-configuration module directly with an unsigned placeholder team identifier. It disables provisioning-profile dependencies with `--//Telegram:disableProvisioningProfiles` and disables device signing with the vendored rules_apple feature `disable_legacy_signing`. The normal Make.py signing resolver is deliberately not invoked: at this pinned revision its build command requires signing material and does not expose the same disable-profile switch as project generation.
+
+Bazel's output root is placed under `RUNNER_TEMP`, outside the source checkout. Bazel 9 rejects its repository-content cache when that cache is inside the main repository.
 
 After successful compilation, the workflow verifies that the IPA has a single `Payload/*.app`, an iPhoneOS main bundle, an arm64 device Mach-O platform, and no embedded provisioning profile or bundle-signature resources. It records a checksum and source revisions in `build-manifest.json`. These checks establish build/package structure; they do not establish installation, login or feature parity on a physical iPhone.
 

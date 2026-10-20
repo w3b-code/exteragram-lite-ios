@@ -35,8 +35,10 @@ private let exteraToggles: [ExteraToggle] = [
 
 private final class ExteraPreferencesArguments {
     let update: (Int32, Bool) -> Void
-    init(update: @escaping (Int32, Bool) -> Void) {
+    let chooseTranslator: () -> Void
+    init(update: @escaping (Int32, Bool) -> Void, chooseTranslator: @escaping () -> Void) {
         self.update = update
+        self.chooseTranslator = chooseTranslator
     }
 }
 
@@ -44,6 +46,7 @@ private struct ExteraPreferencesEntry: ItemListNodeEntry {
     let stableId: Int32
     let title: String
     let value: Bool
+    var label: String? = nil
     var section: ItemListSectionId { return 0 }
 
     static func < (lhs: ExteraPreferencesEntry, rhs: ExteraPreferencesEntry) -> Bool {
@@ -52,6 +55,17 @@ private struct ExteraPreferencesEntry: ItemListNodeEntry {
 
     func item(presentationData: ItemListPresentationData, arguments: Any) -> ListViewItem {
         let arguments = arguments as! ExteraPreferencesArguments
+        if let label = self.label {
+            return ItemListDisclosureItem(
+                presentationData: presentationData,
+                systemStyle: .glass,
+                title: self.title,
+                label: label,
+                sectionId: self.section,
+                style: .blocks,
+                action: { arguments.chooseTranslator() }
+            )
+        }
         return ItemListSwitchItem(
             presentationData: presentationData,
             systemStyle: .glass,
@@ -68,6 +82,7 @@ public func exteraGramPreferencesController(context: AccountContext) -> ViewCont
     let store = ExteraPreferences.standard
     let revision = Atomic<Int>(value: 0)
     let reload = ValuePromise<Int>(0, ignoreRepeated: false)
+    var presentController: ((ViewController) -> Void)?
     let arguments = ExteraPreferencesArguments(update: { id, value in
         let index = Int(id)
         guard exteraToggles.indices.contains(index) else { return }
@@ -77,6 +92,27 @@ public func exteraGramPreferencesController(context: AccountContext) -> ViewCont
             return
         }
         reload.set(revision.modify { $0 + 1 })
+    }, chooseTranslator: {
+        let presentationData = context.sharedContext.currentPresentationData.with { $0 }
+        let sheet = ActionSheetController(presentationData: presentationData)
+        let items: [ActionSheetItem] = [(Int32(0), "Telegram"), (Int32(1), "Google"), (Int32(2), "Yandex")].map { id, name in
+            ActionSheetButtonItem(title: name, action: { [weak sheet] in
+                sheet?.dismissAnimated()
+                do {
+                    try store.set(id, for: ExteraSettings.translationProvider)
+                    reload.set(revision.modify { $0 + 1 })
+                } catch {
+                    return
+                }
+            })
+        }
+        sheet.setItemGroups([
+            ActionSheetItemGroup(items: items),
+            ActionSheetItemGroup(items: [ActionSheetButtonItem(title: presentationData.strings.Common_Cancel, action: { [weak sheet] in
+                sheet?.dismissAnimated()
+            })])
+        ])
+        presentController?(sheet)
     })
 
     let signal = combineLatest(queue: .mainQueue(), context.sharedContext.presentationData, reload.get())
@@ -89,7 +125,7 @@ public func exteraGramPreferencesController(context: AccountContext) -> ViewCont
             backNavigationButton: ItemListBackButton(title: presentationData.strings.Common_Back)
         )
         let languageCode = presentationData.strings.primaryComponent.languageCode
-        let entries: [ExteraPreferencesEntry] = exteraToggles.enumerated().map { index, item in
+        var entries: [ExteraPreferencesEntry] = exteraToggles.enumerated().map { index, item in
             var title = ExteraLocalization.text(item.titleKey, languageCode: languageCode, table: item.table)
             if item.preference.key == ExteraSettings.replaceEditedWithIcon.key {
                 title = String(format: title, presentationData.strings.Conversation_Edited as NSString)
@@ -102,6 +138,13 @@ public func exteraGramPreferencesController(context: AccountContext) -> ViewCont
                 value: store.value(for: item.preference)
             )
         }
+        let translatorNames: [Int32: String] = [0: "Telegram", 1: "Google", 2: "Yandex", 3: "Microsoft"]
+        entries.append(ExteraPreferencesEntry(
+            stableId: 1000,
+            title: ExteraLocalization.text("TranslationProvider", languageCode: languageCode),
+            value: false,
+            label: translatorNames[store.value(for: ExteraSettings.translationProvider)] ?? "Google"
+        ))
         let list = ItemListNodeState(
             presentationData: ItemListPresentationData(presentationData),
             entries: entries,
@@ -110,5 +153,9 @@ public func exteraGramPreferencesController(context: AccountContext) -> ViewCont
         )
         return (state, (list, arguments))
     }
-    return ItemListController(context: context, state: signal)
+    let controller = ItemListController(context: context, state: signal)
+    presentController = { [weak controller] child in
+        controller?.present(child, in: .window(.root))
+    }
+    return controller
 }

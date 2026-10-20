@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ios-manual-${{ github.ref }}
+  group: ios-manual-${{ github.ref }}-${{ inputs.build_ipa && 'ipa' || 'packages' }}
   cancel-in-progress: false
 
 jobs:
@@ -29,6 +29,16 @@ jobs:
         run: swift test --package-path ios/ExteraResources
       - name: Test preferences
         run: swift test --package-path ios/ExteraPreferences
+      - name: Test on-device speech coordinator
+        run: swift test --package-path ios/ExteraSpeech
+      - name: Typecheck Apple speech adapter for iPhone
+        run: >-
+          xcrun --sdk iphoneos swiftc -typecheck -module-name ExteraSpeech
+          -target arm64-apple-ios15.0
+          -sdk "$(xcrun --sdk iphoneos --show-sdk-path)"
+          ios/ExteraSpeech/Sources/ExteraSpeech/*.swift
+      - name: Test translation providers
+        run: swift test --package-path ios/ExteraTranslation
       - name: Check overlay Swift syntax
         shell: bash
         run: |

@@ -878,7 +878,14 @@
     }
   ],
   "swift_compilation": "not_run_no_compiler",
-  "swift_tests": "not_run_no_compiler",
+  "swift_tests": {
+    "status": "passed",
+    "platform": "GitHub macOS 26",
+    "tests": 11,
+    "port_commit": "8c28d4fb598cbbf15b7af3dd012d5e5c5ca8c58c",
+    "workflow_run": "https://github.com/w3b-code/exteragram-lite-ios/actions/runs/39465848539",
+    "scope": "Swift package tests; device application build and physical iPhone checks remain pending"
+  },
   "completed_additional_preferences": [
     {
       "property": "iconPack",
