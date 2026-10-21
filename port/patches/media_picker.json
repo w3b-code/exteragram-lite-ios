@@ -20,13 +20,13 @@
   {
     "path": "submodules/MediaPickerUI/Sources/MediaPickerScreen.swift",
     "old": "if case .notDetermined = cameraAccess, !self.requestedCameraAccess {",
-    "new": "if case .notDetermined = cameraAccess, !self.requestedCameraAccess, self.cameraView != nil || self.modernCameraView != nil {",
+    "new": "if case .notDetermined = cameraAccess, !self.requestedCameraAccess, !exteraHidesCameraPreview {",
     "occurrences": 1
   },
   {
     "path": "submodules/MediaPickerUI/Sources/MediaPickerScreen.swift",
     "old": "if !stories, case .notDetermined = cameraAccess, !self.requestedCameraAccess {",
-    "new": "if !stories, case .notDetermined = cameraAccess, !self.requestedCameraAccess, self.cameraView != nil || self.modernCameraView != nil {",
+    "new": "if !stories, case .notDetermined = cameraAccess, !self.requestedCameraAccess, !exteraHidesCameraPreview {",
     "occurrences": 1
   },
   {
@@ -39,6 +39,12 @@
     "path": "submodules/MediaPickerUI/Sources/MediaPickerScreen.swift",
     "old": "        var rightControlItems: [GlassControlGroupComponent.Item] = []\n",
     "new": "        var rightControlItems: [GlassControlGroupComponent.Item] = []\n        if self.exteraCameraButtonVisible, case .glass = self.style {\n            rightControlItems.append(GlassControlGroupComponent.Item(\n                id: AnyHashable(\"exteraCamera\"),\n                content: .icon(\"Chat/Attach Menu/OpenCamera\"),\n                action: { [weak self] in self?.exteraCameraPressed() }\n            ))\n        }\n        if case .glass = self.style {\n        } else if self.exteraUsesSeparateCameraButton {\n            if self.exteraCameraButtonVisible {\n                self.exteraCameraBarButton.accessibilityLabel = self.presentationData.strings.Attachment_OpenCamera\n                if self.navigationItem.rightBarButtonItem !== self.exteraCameraBarButton {\n                    self.navigationItem.rightBarButtonItem = self.exteraCameraBarButton\n                }\n            } else if self.navigationItem.rightBarButtonItem === self.exteraCameraBarButton {\n                if self.bannedSendPhotos != nil && self.bannedSendVideos != nil {\n                    self.navigationItem.rightBarButtonItem = nil\n                } else {\n                    self.navigationItem.rightBarButtonItem = UIBarButtonItem(customDisplayNode: self.moreButtonNode)\n                    self.navigationItem.rightBarButtonItem?.action = #selector(self.rightButtonPressed)\n                    self.navigationItem.rightBarButtonItem?.target = self\n                }\n            }\n        }\n",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/MediaPickerUI/Sources/MediaPickerScreen.swift",
+    "old": "            var stories = false\n            var selectable = true\n",
+    "new": "            let exteraHidesCameraPreview: Bool\n            if case .assets(nil, .default) = controller.subject {\n                exteraHidesCameraPreview = ExteraPreferences.standard.value(for: ExteraSettings.hideCameraTile)\n            } else {\n                exteraHidesCameraPreview = false\n            }\n            var stories = false\n            var selectable = true\n",
     "occurrences": 1
   }
 ]

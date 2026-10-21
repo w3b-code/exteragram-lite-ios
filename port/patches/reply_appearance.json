@@ -1,0 +1,44 @@
+[
+  {
+    "path": "submodules/TelegramUI/Components/Chat/ChatMessageReplyInfoNode/BUILD",
+    "old": "        \"//submodules/AsyncDisplayKit\",",
+    "new": "        \"//submodules/ExteraPreferences:ExteraPreferences\",\n        \"//submodules/AsyncDisplayKit\",",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/TelegramUI/Components/Chat/ChatMessageReplyInfoNode/Sources/ChatMessageReplyInfoNode.swift",
+    "old": "import Foundation\n",
+    "new": "import Foundation\nimport ExteraPreferences\n",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/TelegramUI/Components/Chat/ChatMessageReplyInfoNode/Sources/ChatMessageReplyInfoNode.swift",
+    "old": "            let fontSize = floor(arguments.presentationData.fontSize.baseDisplaySize * 14.0 / 17.0)\n",
+    "new": "            let fontSize = floor(arguments.presentationData.fontSize.baseDisplaySize * 14.0 / 17.0)\n            // Snapshot display preferences once for this measure/apply transaction.\n            let exteraReplyColors = ExteraPreferences.standard.value(for: ExteraSettings.replyColors)\n            let exteraReplyEmoji = ExteraPreferences.standard.value(for: ExteraSettings.replyEmoji)\n            let exteraReplyBackground = ExteraPreferences.standard.value(for: ExteraSettings.replyBackground)\n",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/TelegramUI/Components/Chat/ChatMessageReplyInfoNode/Sources/ChatMessageReplyInfoNode.swift",
+    "old": "            if arguments.isSummarized {\n                authorNameColor = nil\n            }\n",
+    "new": "            if !exteraReplyColors {\n                authorNameColor = nil\n                dashSecondaryColor = nil\n                dashTertiaryColor = nil\n            }\n            if !exteraReplyEmoji {\n                giftEmojiFileId = nil\n            }\n            if arguments.isSummarized {\n                authorNameColor = nil\n            }\n",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/TelegramUI/Components/Chat/ChatMessageReplyInfoNode/Sources/ChatMessageReplyInfoNode.swift",
+    "old": "                if let backgroundEmojiId = author?.backgroundEmojiId {\n",
+    "new": "                if exteraReplyEmoji, let backgroundEmojiId = author?.backgroundEmojiId {\n",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/TelegramUI/Components/Chat/ChatMessageReplyInfoNode/Sources/ChatMessageReplyInfoNode.swift",
+    "old": "                var isTransparent: Bool = false\n",
+    "new": "                var isTransparent: Bool = !exteraReplyBackground\n",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/TelegramUI/Components/Chat/MessageInlineBlockBackgroundView/Sources/MessageInlineBlockBackgroundView.swift",
+    "old": "        if previousParams?.primaryColor != params.primaryColor || previousParams?.secondaryColor != params.secondaryColor {\n",
+    "new": "        if previousParams?.primaryColor != params.primaryColor || previousParams?.secondaryColor != params.secondaryColor || previousParams?.isTransparent != params.isTransparent || previousParams?.backgroundColor != params.backgroundColor {\n",
+    "occurrences": 1
+  }
+]

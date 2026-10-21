@@ -2,3 +2,6 @@
 "HideReactionsInChannels" = "Hide Reactions in Channels";
 "HideReactionsInGroups" = "Hide Reactions in Groups";
 "HideReactionsInPrivateChats" = "Hide Reactions in Private Chats";
+"ReplyColors" = "Author colors in replies";
+"ReplyEmoji" = "Background emoji in replies";
+"ReplyBackground" = "Reply background fill";

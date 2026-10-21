@@ -2,3 +2,6 @@
 "HideReactionsInChannels" = "Скрыть реакции в каналах";
 "HideReactionsInGroups" = "Скрыть реакции в группах";
 "HideReactionsInPrivateChats" = "Скрыть реакции в личных чатах";
+"ReplyColors" = "Цвета авторов в ответах";
+"ReplyEmoji" = "Фоновые эмодзи в ответах";
+"ReplyBackground" = "Заливка фона ответов";
