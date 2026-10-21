@@ -22,4 +22,6 @@ A read-only API audit additionally found and fixed the missing `PresentationData
 
 | `ceb60a1` | [GitHub run 39669308899](https://github.com/w3b-code/exteragram-lite-ios/actions/runs/39669308899), Swift modules job | All six packages passed: 65 Swift tests including 15 feed state tests. Apple speech adapter arm64 iPhoneOS typecheck, overlay Swift syntax and all 15 Python tests passed. Application compilation is a separate job/result. |
 
+| `ed01136` | [GitHub run 39672749461](https://github.com/w3b-code/exteragram-lite-ios/actions/runs/39672749461) | Module-only run passed: 65 Swift tests, iPhone speech adapter typecheck, overlay syntax and 15 Python tests. Reply appearance and the camera permission-default fix require a later full application compile. |
+
 Device compilation, installation in Feather, Telegram login, profile-dependent capabilities, and feature behavior on an iPhone remain separate checks. Full Lite feature parity is incomplete.

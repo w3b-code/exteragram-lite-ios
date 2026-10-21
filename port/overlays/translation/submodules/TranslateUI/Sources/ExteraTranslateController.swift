@@ -227,7 +227,15 @@ private final class ExteraTranslateController: UIViewController, UIAdaptivePrese
         }
         translationTask = Task { @MainActor [weak self] in
             do {
-                let result = try await service.translate(text, from: from, to: to, provider: selectedProvider)
+                let selectedService: ExteraTranslationClient
+                if selectedProvider == .microsoft {
+                    let credentials = try await Task.detached(priority: .userInitiated) { try ExteraMicrosoftCredentialStore.load() }.value
+                    try Task.checkCancellation()
+                    selectedService = ExteraTranslationClient(microsoft: credentials)
+                } else {
+                    selectedService = service
+                }
+                let result = try await selectedService.translate(text, from: from, to: to, provider: selectedProvider)
                 try Task.checkCancellation()
                 guard let self, self.generation == currentGeneration else { return }
                 self.complete(result, entities: [])
@@ -257,9 +265,12 @@ private final class ExteraTranslateController: UIViewController, UIAdaptivePrese
     }
 
     private func errorMessage(_ error: Error) -> String {
+        if error is ExteraMicrosoftCredentialStoreError {
+            return label("Could not read the Microsoft keychain configuration. Configure Microsoft again in exteraGram settings.", "Не удалось прочитать конфигурацию Microsoft из Связки ключей. Настройте Microsoft заново в настройках exteraGram.")
+        }
         guard russian else { return error.localizedDescription }
         switch error as? ExteraTranslationError {
-        case .configurationRequired: return "Для этого переводчика нужен собственный ключ сервиса. Выберите Google или Yandex в настройках exteraGram."
+        case .configurationRequired: return "Добавьте свой ключ Azure Translator в настройках exteraGram → Переводчик → Microsoft."
         case .rateLimited: return "Переводчик временно ограничил запросы. Повторите позже."
         case .unsupportedLanguage, .invalidLanguage: return "Переводчик не поддерживает выбранный язык."
         default: return "Не удалось получить перевод. Проверьте подключение или выберите другой переводчик в настройках exteraGram."

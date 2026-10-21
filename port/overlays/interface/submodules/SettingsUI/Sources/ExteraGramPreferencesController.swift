@@ -107,9 +107,20 @@ public func exteraGramPreferencesController(context: AccountContext) -> ViewCont
     }, chooseTranslator: {
         let presentationData = context.sharedContext.currentPresentationData.with { $0 }
         let sheet = ActionSheetController(presentationData: presentationData)
-        let items: [ActionSheetItem] = [(Int32(0), "Telegram"), (Int32(1), "Google"), (Int32(2), "Yandex")].map { id, name in
+        let items: [ActionSheetItem] = [(Int32(0), "Telegram"), (Int32(1), "Google"), (Int32(2), "Yandex"), (Int32(3), "Microsoft…")].map { id, name in
             ActionSheetButtonItem(title: name, action: { [weak sheet] in
                 sheet?.dismissAnimated()
+                if id == 3 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                        presentExteraMicrosoftConfiguration(context: context, onSaved: {
+                            do {
+                                try store.set(id, for: ExteraSettings.translationProvider)
+                                reload.set(revision.modify { $0 + 1 })
+                            } catch { return }
+                        })
+                    }
+                    return
+                }
                 do {
                     try store.set(id, for: ExteraSettings.translationProvider)
                     reload.set(revision.modify { $0 + 1 })

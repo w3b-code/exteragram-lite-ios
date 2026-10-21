@@ -1,0 +1,8 @@
+[
+  {
+    "path": "submodules/SettingsUI/BUILD",
+    "old": "        \"//submodules/PresentationDataUtils:PresentationDataUtils\",",
+    "new": "        \"//submodules/ExteraTranslation:ExteraTranslation\",\n        \"//submodules/PresentationDataUtils:PresentationDataUtils\",",
+    "occurrences": 1
+  }
+]

@@ -21,7 +21,7 @@ public enum ExteraTranslationProvider: Int32, Codable, CaseIterable, Sendable {
 }
 
 /// The user's own Azure resource credentials. No Android-app credential is used.
-public struct ExteraMicrosoftCredentials: Sendable {
+public struct ExteraMicrosoftCredentials: Codable, Sendable {
     public let subscriptionKey: String
     public let region: String?
     public init(subscriptionKey: String, region: String? = nil) {

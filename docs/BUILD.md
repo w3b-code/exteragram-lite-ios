@@ -2,7 +2,7 @@
 
 The workflow is manual (`Actions` → `iOS packages and unsigned IPA` → `Run workflow`). It has no push/PR trigger and does not change repository visibility. Keep the repository public for the complete workflow if using the free standard GitHub-hosted macOS runners. Private-repository minutes and artifact storage are separate allowances.
 
-The package job tests `ExteraResources`, `ExteraPreferences`, `ExteraSpeech`, `ExteraTranslation`, `ExteraExport`, and the not-yet-integrated `ExteraFeed` core, typechecks the Apple speech adapter against the iPhoneOS SDK, parses the Swift overlays, and tests the Python IPA validator. To run only these checks, clear the **Build a device IPA** option. No API credentials or Apple signing files are needed for package checks.
+The package job tests `ExteraResources`, `ExteraPreferences`, `ExteraSpeech`, `ExteraTranslation`, `ExteraExport`, and the not-yet-integrated `ExteraFeed` core, typechecks the Apple speech adapter and translation/Keychain module against the iPhoneOS SDK, parses the Swift overlays, and tests the Python IPA validator. To run only these checks, clear the **Build a device IPA** option. No API credentials or Apple signing files are needed for package checks.
 
 For an application build, add repository Secrets `TELEGRAM_API_ID` and `TELEGRAM_API_HASH` with the application's own Telegram API credentials. They can be obtained at https://my.telegram.org/apps. No `.p12`, password, `.mobileprovision`, Apple account or signing certificate is used by this workflow. These API credentials identify the Telegram application; they are unrelated to Feather's certificate.
 

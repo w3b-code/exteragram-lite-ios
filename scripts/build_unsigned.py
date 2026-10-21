@@ -81,11 +81,12 @@ def build(upstream, output):
     # registries, before the much longer native typecheck/compile.
     patched = json.loads((upstream / "extera-port-manifest.json").read_text(encoding="utf-8"))["files"]
     swift_sources = sorted(name for name in patched if name.endswith(".swift"))
+    iphone_sdk = subprocess.check_output(["xcrun", "--sdk", "iphoneos", "--show-sdk-path"], text=True).strip()
     for name in swift_sources:
         source = (upstream / name).resolve(strict=True)
         if not source.is_relative_to(upstream):
             raise ValueError("Patched Swift source escaped the upstream checkout")
-        subprocess.run(["xcrun", "--sdk", "iphoneos", "swiftc", "-frontend", "-parse", str(source)], check=True)
+        subprocess.run(["xcrun", "--sdk", "iphoneos", "swiftc", "-frontend", "-parse", "-target", "arm64-apple-ios15.0", "-sdk", iphone_sdk, str(source)], check=True)
     print(f"Parsed {len(swift_sources)} patched Swift files; native typechecking is still required.")
     build_input = upstream / "build-input"
     build_input.mkdir(exist_ok=True)

@@ -39,6 +39,12 @@ jobs:
           ios/ExteraSpeech/Sources/ExteraSpeech/*.swift
       - name: Test translation providers
         run: swift test --package-path ios/ExteraTranslation
+      - name: Typecheck translation and secure storage for iPhone
+        run: >-
+          xcrun --sdk iphoneos swiftc -typecheck -module-name ExteraTranslation
+          -target arm64-apple-ios15.0
+          -sdk "$(xcrun --sdk iphoneos --show-sdk-path)"
+          ios/ExteraTranslation/Sources/ExteraTranslation/*.swift
       - name: Test chat export encoding and pagination
         run: swift test --package-path ios/ExteraExport
       - name: Test feed state and paging core
