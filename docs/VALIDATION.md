@@ -14,4 +14,8 @@ The checks below refer to the exact source revisions shown. They are not claims 
 
 | Same revision | Same run, unsigned IPA job | Compilation stopped at the first Metal shader because the selected Xcode had no usable Metal Toolchain. No IPA was produced. The next workflow explicitly downloads the component and compiles a small iPhoneOS shader under the same minimal environment before starting Bazel. |
 
+| `db1bd52` | [GitHub run 39475566150](https://github.com/w3b-code/exteragram-lite-ios/actions/runs/39475566150) | All module checks passed (50 Swift tests, 15 Python tests). Metal toolchain install and shader probe passed. Native compilation reached 6,724 Bazel actions, then rejected `namespace: Int32` in the reaction classifier because pinned Postbox uses `PeerId.Namespace`. No IPA was produced. The classifier now accepts the native namespace type. Subsequent builds keep going after independent errors to collect more compiler diagnostics in one run, and provide HOME to Homebrew-dependent build actions. |
+
+A read-only API audit additionally found and fixed the missing `PresentationDataUtils` import in the settings overlay and changed both progress-controller properties to `ViewController?`, matching the existing helper return type. These are source-contract checks; the next full build must compile them.
+
 Device compilation, installation in Feather, Telegram login, profile-dependent capabilities, and feature behavior on an iPhone remain separate checks. Full Lite feature parity is incomplete.

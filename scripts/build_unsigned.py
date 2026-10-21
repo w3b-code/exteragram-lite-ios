@@ -112,7 +112,8 @@ def build(upstream, output):
         command.set_build_number(os.environ.get("EXTERA_BUILD_NUMBER", "1"))
         command.set_disable_provisioning_profiles()
         command.common_build_args += [
-            "--features=disable_legacy_signing", "--jobs=3",
+            "--features=disable_legacy_signing", "--jobs=3", "--keep_going",
+            "--action_env=HOME",
             "--local_resources=cpu=3", "--local_resources=memory=9500",
         ]
         command.invoke_build()

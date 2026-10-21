@@ -56,7 +56,7 @@ private final class ExteraSpeechPresentation {
     private let conversion = MetaDisposable()
     private let transcriber = ExteraSpeechTranscriber()
     private var recognition: (any ExteraSpeechTask)?
-    private var loading: OverlayStatusController?
+    private var loading: ViewController?
     private var temporaryDirectory: URL?
     private var finished = false
 

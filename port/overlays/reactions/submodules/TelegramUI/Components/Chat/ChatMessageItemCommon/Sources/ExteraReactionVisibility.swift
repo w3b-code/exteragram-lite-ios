@@ -10,7 +10,7 @@ enum ExteraReactionChatKind: Equatable {
     case unknown
 }
 
-func exteraReactionChatKind(peer: Peer?, namespace: Int32) -> ExteraReactionChatKind {
+func exteraReactionChatKind(peer: Peer?, namespace: PeerId.Namespace) -> ExteraReactionChatKind {
     if let channel = peer as? TelegramChannel {
         switch channel.info {
         case .broadcast:

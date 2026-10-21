@@ -3,6 +3,7 @@ import Display
 import SwiftSignalKit
 import TelegramCore
 import TelegramPresentationData
+import PresentationDataUtils
 import ItemListUI
 import AccountContext
 import ExteraPreferences
@@ -27,9 +28,11 @@ private let exteraToggles: [ExteraToggle] = [
     ExteraToggle(titleKey: "ReplaceEditedWithIcon", preference: ExteraSettings.replaceEditedWithIcon),
     ExteraToggle(titleKey: "HideShareButton", preference: ExteraSettings.hideShareButton),
     ExteraToggle(titleKey: "HideStories", preference: ExteraSettings.hideStories),
+    ExteraToggle(titleKey: "HidePhoneNumber", preference: ExteraSettings.hidePhoneNumber),
     ExteraToggle(titleKey: "HideKeyboardOnScroll", preference: ExteraSettings.hideKeyboardOnScroll),
     ExteraToggle(titleKey: "DisableGreetingSticker", preference: ExteraSettings.disableGreetingSticker),
     ExteraToggle(titleKey: "FilterZalgo", preference: ExteraSettings.filterZalgo),
+    ExteraToggle(titleKey: "DisableMarkdown", preference: ExteraSettings.disableMarkdown),
     ExteraToggle(titleKey: "HideSendAsPeer", preference: ExteraSettings.hideSendAsPeer),
     ExteraToggle(titleKey: "InAppVibration", preference: ExteraSettings.inAppVibration),
     ExteraToggle(titleKey: "HideReactionsInChannels", preference: ExteraSettings.hideReactionsInChannels, table: "ExteraPort"),

@@ -43,7 +43,7 @@ private final class ExteraExportPresentation {
     private let arguments: ExteraExportMenuArguments
     private let request = MetaDisposable()
     private var accumulator = ExteraExportAccumulator(maximumMessages: 100_000)
-    private var loading: OverlayStatusController?
+    private var loading: ViewController?
     private var finished = false
     private var requestGeneration = 0
 

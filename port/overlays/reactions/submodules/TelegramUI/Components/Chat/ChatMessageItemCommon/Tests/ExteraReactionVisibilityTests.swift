@@ -37,6 +37,6 @@ final class ExteraReactionVisibilityTests: XCTestCase {
 
     func testMissingChannelPeerIsNotMistakenForSupergroup() {
         XCTAssertEqual(exteraReactionChatKind(peer: nil, namespace: Namespaces.Peer.CloudChannel), .unknown)
-        XCTAssertEqual(exteraReactionChatKind(peer: nil, namespace: Int32.max), .unknown)
+        XCTAssertEqual(exteraReactionChatKind(peer: nil, namespace: .max), .unknown)
     }
 }
