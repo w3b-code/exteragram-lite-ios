@@ -41,6 +41,8 @@ jobs:
         run: swift test --package-path ios/ExteraTranslation
       - name: Test chat export encoding and pagination
         run: swift test --package-path ios/ExteraExport
+      - name: Test feed state and paging core
+        run: swift test --package-path ios/ExteraFeed
       - name: Check overlay Swift syntax
         shell: bash
         run: |

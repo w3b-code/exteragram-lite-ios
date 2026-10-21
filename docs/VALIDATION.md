@@ -18,4 +18,6 @@ The checks below refer to the exact source revisions shown. They are not claims 
 
 A read-only API audit additionally found and fixed the missing `PresentationDataUtils` import in the settings overlay and changed both progress-controller properties to `ViewController?`, matching the existing helper return type. These are source-contract checks; the next full build must compile them.
 
+| `7422a4198afd4f3e1564c0d603f2d2e4e8002bdb` | [GitHub run 39545888383](https://github.com/w3b-code/exteragram-lite-ios/actions/runs/39545888383) | Module checks passed (50 Swift tests and 15 Python tests). The hosted runner lost communication during recursive upstream checkout, before Xcode selection or application compilation. GitHub supplied no job-log blob; the check annotation records the runner communication failure. No IPA was produced. |
+
 Device compilation, installation in Feather, Telegram login, profile-dependent capabilities, and feature behavior on an iPhone remain separate checks. Full Lite feature parity is incomplete.

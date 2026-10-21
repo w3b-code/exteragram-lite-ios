@@ -1,0 +1,44 @@
+[
+  {
+    "path": "submodules/MediaPickerUI/BUILD",
+    "old": "        \"//submodules/SSignalKit/SwiftSignalKit:SwiftSignalKit\",",
+    "new": "        \"//submodules/ExteraPreferences:ExteraPreferences\",\n        \"//submodules/SSignalKit/SwiftSignalKit:SwiftSignalKit\",",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/MediaPickerUI/Sources/MediaPickerScreen.swift",
+    "old": "import Foundation\n",
+    "new": "import Foundation\nimport ExteraPreferences\n",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/MediaPickerUI/Sources/MediaPickerScreen.swift",
+    "old": "            if case .assets(nil, .default) = controller.subject {\n                useLegacyCamera = true\n",
+    "new": "            if case .assets(nil, .default) = controller.subject, !ExteraPreferences.standard.value(for: ExteraSettings.hideCameraTile) {\n                useLegacyCamera = true\n",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/MediaPickerUI/Sources/MediaPickerScreen.swift",
+    "old": "if case .notDetermined = cameraAccess, !self.requestedCameraAccess {",
+    "new": "if case .notDetermined = cameraAccess, !self.requestedCameraAccess, self.cameraView != nil || self.modernCameraView != nil {",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/MediaPickerUI/Sources/MediaPickerScreen.swift",
+    "old": "if !stories, case .notDetermined = cameraAccess, !self.requestedCameraAccess {",
+    "new": "if !stories, case .notDetermined = cameraAccess, !self.requestedCameraAccess, self.cameraView != nil || self.modernCameraView != nil {",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/MediaPickerUI/Sources/MediaPickerScreen.swift",
+    "old": "    @objc private func rightButtonPressed() {\n",
+    "new": "    private lazy var exteraCameraBarButton = UIBarButtonItem(image: UIImage(systemName: \"camera\"), style: .plain, target: self, action: #selector(self.exteraCameraPressed))\n\n    private var exteraUsesSeparateCameraButton: Bool {\n        guard case .assets(nil, .default) = self.subject else { return false }\n        return ExteraPreferences.standard.value(for: ExteraSettings.hideCameraTile)\n    }\n\n    private var exteraCameraButtonVisible: Bool {\n        return self.exteraUsesSeparateCameraButton && self.selectionCount == 0\n            && self.controllerNode.currentDisplayMode == .all\n            && (self.bannedSendPhotos == nil || self.bannedSendVideos == nil)\n            && self.openCamera != nil && UIImagePickerController.isSourceTypeAvailable(.camera)\n    }\n\n    @objc private func exteraCameraPressed() {\n        guard self.exteraCameraButtonVisible else { return }\n        self.view.endEditing(true)\n        self.openCamera?(nil)\n    }\n\n    @objc private func rightButtonPressed() {\n",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/MediaPickerUI/Sources/MediaPickerScreen.swift",
+    "old": "        var rightControlItems: [GlassControlGroupComponent.Item] = []\n",
+    "new": "        var rightControlItems: [GlassControlGroupComponent.Item] = []\n        if self.exteraCameraButtonVisible, case .glass = self.style {\n            rightControlItems.append(GlassControlGroupComponent.Item(\n                id: AnyHashable(\"exteraCamera\"),\n                content: .icon(\"Chat/Attach Menu/OpenCamera\"),\n                action: { [weak self] in self?.exteraCameraPressed() }\n            ))\n        }\n        if case .glass = self.style {\n        } else if self.exteraUsesSeparateCameraButton {\n            if self.exteraCameraButtonVisible {\n                self.exteraCameraBarButton.accessibilityLabel = self.presentationData.strings.Attachment_OpenCamera\n                if self.navigationItem.rightBarButtonItem !== self.exteraCameraBarButton {\n                    self.navigationItem.rightBarButtonItem = self.exteraCameraBarButton\n                }\n            } else if self.navigationItem.rightBarButtonItem === self.exteraCameraBarButton {\n                if self.bannedSendPhotos != nil && self.bannedSendVideos != nil {\n                    self.navigationItem.rightBarButtonItem = nil\n                } else {\n                    self.navigationItem.rightBarButtonItem = UIBarButtonItem(customDisplayNode: self.moreButtonNode)\n                    self.navigationItem.rightBarButtonItem?.action = #selector(self.rightButtonPressed)\n                    self.navigationItem.rightBarButtonItem?.target = self\n                }\n            }\n        }\n",
+    "occurrences": 1
+  }
+]

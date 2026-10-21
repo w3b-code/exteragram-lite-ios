@@ -1,0 +1,7 @@
+# Camera tile
+
+The Lite APK has 17 static consumers of `getHideCameraTile`, covering grid positions/types and a separate floating camera button. `ChatAttachAlert.updateCameraButtonVisibility` shows that button only in the photo layout, with a usable camera, no open capture and no selected media. These are REA/JADX observations, not runtime evidence. `showCamera` still creates an Android camera object with a preview-related flag; it does not prove that all camera initialization is prevented.
+
+The iOS adaptation hides the ordinary chat media picker's live legacy camera preview. The existing nil-camera layout removes its cutout, so photo cells fill the gap. Opening that gallery no longer requests camera permission for a nonexistent preview. Avatar/sticker creation modes keep their native camera flows.
+
+A separate camera action remains available with no selection in the standard gallery: a GlassControl icon on the glass panel, or a UIBarButtonItem on the classic panel. It uses the existing `openCamera(nil)` callback and native permissions/capture flow, respects photo/video bans, and does not create a background preview. Selecting photos restores the ordinary media actions. The option takes effect when opening a new picker. Theme, iPad and actual capture transitions still require device validation; this is not a claim that all camera preferences or every picker mode has been ported.

@@ -77,6 +77,16 @@ def build(upstream, output):
     if 'if "disable_legacy_signing" in features:' not in rule_file.read_text():
         raise ValueError("Vendored rules_apple no longer supports the verified unsigned feature")
     subprocess.run([sys.executable, str(ROOT / "scripts/apply_port.py"), str(upstream)], check=True)
+    # Parse the actual patched files, including Swift changes stored in JSON
+    # registries, before the much longer native typecheck/compile.
+    patched = json.loads((upstream / "extera-port-manifest.json").read_text(encoding="utf-8"))["files"]
+    swift_sources = sorted(name for name in patched if name.endswith(".swift"))
+    for name in swift_sources:
+        source = (upstream / name).resolve(strict=True)
+        if not source.is_relative_to(upstream):
+            raise ValueError("Patched Swift source escaped the upstream checkout")
+        subprocess.run(["xcrun", "--sdk", "iphoneos", "swiftc", "-frontend", "-parse", str(source)], check=True)
+    print(f"Parsed {len(swift_sources)} patched Swift files; native typechecking is still required.")
     build_input = upstream / "build-input"
     build_input.mkdir(exist_ok=True)
     bazel = acquire_bazel(build_input)

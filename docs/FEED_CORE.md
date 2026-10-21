@@ -1,0 +1,9 @@
+# Portable feed state
+
+`ios/ExteraFeed` is a Foundation-only Swift package preparing the native feed implementation described in FEED_PLAN.md. It is tested separately and is not yet connected to TelegramCore, a tab, database observers or network requests.
+
+Implemented: account-scoped real composite identities, validated Codable configuration, exact Android `(date, -channel, message)` timeline order without signed-negation overflow, joined broadcast-channel inclusion, archive/exclusion policy, stale generation/request rejection, independent source cursors, explicit newest coverage, conservative merged coverage watermark, filtered raw-row progress, recoverable paging errors, version-aware dedup/edits/deletion tombstones, per-channel albums with explicit completeness, all-included-channel unread totals, visibility gates and real per-peer read maxima. Drained read batches must be retained and acknowledged/retried by a future adapter. There is no one-second scheduler or read RPC in this package.
+
+Fifteen tests cover equal timestamps/IDs across channels/accounts, invalid persisted IDs, source eligibility, generation and duplicate/stale responses, atomic invalid-page rejection, raw paging past service/empty records, source watermark, newer-edge races, retryable failures, edits/deletes, split albums, unread scope and all visibility gates.
+
+Pending: complete joined-channel enumeration, Postbox/native history adapter, hole filling/network and cancellation scheduler, durable account-local storage wiring, lifecycle/cache trimming, unread divider/scroll restoration, native message rendering/actions, settings/tab and sponsored-row parity. The generic `payload` is an opaque test/caller value, not a replacement for Telegram media/message objects. The adapter must use `coveredPosts` when publishing a claimed covered chronological page. No finished feed or device behavior is claimed.

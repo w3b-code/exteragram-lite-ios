@@ -10,5 +10,59 @@
     "old": "public func convertMarkdownToAttributes(_ text: NSAttributedString) -> NSAttributedString {\n",
     "new": "public func convertMarkdownToAttributes(_ text: NSAttributedString) -> NSAttributedString {\n    if ExteraPreferences.standard.value(for: ExteraSettings.disableMarkdown) {\n        return text\n    }\n",
     "occurrences": 1
+  },
+  {
+    "path": "submodules/TelegramUI/Sources/MentionChatInputContextPanelNode.swift",
+    "old": "import Foundation\n",
+    "new": "import Foundation\nimport ExteraPreferences\n",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/TelegramUI/Sources/MentionChatInputContextPanelNode.swift",
+    "old": "                            if let range = mentionQueryRange {\n                                if let addressName = peer.addressName, !addressName.isEmpty {",
+    "new": "                            if let range = mentionQueryRange {\n                                let isBot: Bool\n                                if case let .user(user) = peer {\n                                    isBot = user.botInfo != nil\n                                } else {\n                                    isBot = false\n                                }\n                                let mentionSuffix = ExteraPreferences.standard.value(for: ExteraSettings.addCommaAfterMention) && !isBot ? \", \" : \" \"\n                                if let addressName = peer.addressName, !addressName.isEmpty {",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/TelegramUI/Sources/MentionChatInputContextPanelNode.swift",
+    "old": "with: addressName + \" \"",
+    "new": "with: addressName + mentionSuffix",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/TelegramUI/Sources/MentionChatInputContextPanelNode.swift",
+    "old": "replacementText.append(NSAttributedString(string: \" \"))",
+    "new": "replacementText.append(NSAttributedString(string: mentionSuffix))",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/TelegramUI/Components/MessageInputPanelComponent/BUILD",
+    "old": "        \"//submodules/Display\",",
+    "new": "        \"//submodules/ExteraPreferences:ExteraPreferences\",\n        \"//submodules/Display\",",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/TelegramUI/Components/MessageInputPanelComponent/Sources/MessageInputPanelComponent.swift",
+    "old": "import Foundation\n",
+    "new": "import Foundation\nimport ExteraPreferences\n",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/TelegramUI/Components/MessageInputPanelComponent/Sources/MessageInputPanelComponent.swift",
+    "old": "                                    if let range = mentionQueryRange {\n                                        let inputText = NSMutableAttributedString(attributedString: inputState.inputText)",
+    "new": "                                    if let range = mentionQueryRange {\n                                        let isBot: Bool\n                                        if case let .user(user) = peer {\n                                            isBot = user.botInfo != nil\n                                        } else {\n                                            isBot = false\n                                        }\n                                        let mentionSuffix = ExteraPreferences.standard.value(for: ExteraSettings.addCommaAfterMention) && !isBot ? \", \" : \" \"\n                                        let inputText = NSMutableAttributedString(attributedString: inputState.inputText)",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/TelegramUI/Components/MessageInputPanelComponent/Sources/MessageInputPanelComponent.swift",
+    "old": "let replacementText = addressName + \" \"",
+    "new": "let replacementText = addressName + mentionSuffix",
+    "occurrences": 1
+  },
+  {
+    "path": "submodules/TelegramUI/Components/MessageInputPanelComponent/Sources/MessageInputPanelComponent.swift",
+    "old": "replacementText.append(NSAttributedString(string: \" \"))",
+    "new": "replacementText.append(NSAttributedString(string: mentionSuffix))",
+    "occurrences": 1
   }
 ]
